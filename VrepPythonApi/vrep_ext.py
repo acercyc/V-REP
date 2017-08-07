@@ -64,32 +64,6 @@ def callBuildinFunction(clientID, functionName, operationMode, *args):
     return returnCode, returnStr, commandStr
 
 
-# ---------------------------------- Backup ---------------------------------- #
-# def callAssociatedScriptFunction(clientID, objName, functionName, operationMode, *args):
-#     argStr = ', '.join(args)
-#     commandStr = "h = simGetScriptHandle('{:s}')\n" \
-#                  "simCallScriptFunction('{:s}', h, {:s})".format(objName, functionName, argStr)
-#     returns = vrep.simxCallScriptFunction(clientID,
-#                                           "remoteApiCommandServer", vrep.sim_scripttype_childscript,
-#                                           'executeCode_function2',
-#                                           [], [], [commandStr],
-#                                           bytearray(),
-#                                           operationMode)
-#     return commandStr, returns
-#
-# def callBuildinFunction(clientID, functionName, operationMode, *args):
-#     argStr = ', '.join(args)
-#     commandStr = 'returnVal = {:s}({:s})'.format(functionName, argStr)
-#     returns = vrep.simxCallScriptFunction(clientID,
-#                                           "remoteApiCommandServer", vrep.sim_scripttype_childscript,
-#                                           'executeCode_function',
-#                                           [], [], [commandStr],
-#                                           bytearray(),
-#                                           operationMode)
-#     return commandStr, returns
-# ---------------------------------------------------------------------------- #
-
-
 # ============================================================================ #
 #                                  Controller                                  #
 # ============================================================================ #
