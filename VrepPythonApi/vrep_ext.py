@@ -1,4 +1,7 @@
+# Acer 2017/09/15 12:08
+
 import os
+import numpy as np
 
 try:
     from . import vrep
@@ -30,9 +33,12 @@ def loadApiDummy(clientID):
 
 
 def callAssociatedScriptFunction(clientID, objName, functionName, operationMode, *args):
-    argStr = ', '.join(args)
+    if len(args) > 0:
+        argStr = ', ' + ', '.join(args)
+    else:
+        argStr = ''
     commandStr = "h = simGetScriptHandle('{:s}')\n" \
-                 "returnVal = {{simCallScriptFunction('{:s}', h, {:s})}}".format(objName, functionName, argStr)
+                 "returnVal = {{simCallScriptFunction('{:s}', h{:s})}}".format(objName, functionName, argStr)
     returns = vrep.simxCallScriptFunction(clientID,
                                           "remoteApiCommandServer", vrep.sim_scripttype_childscript,
                                           'executeCode_function_withReturnStr',
@@ -68,9 +74,11 @@ def callBuildinFunction(clientID, functionName, operationMode, *args):
 #                                  Controller                                  #
 # ============================================================================ #
 class VrepController:
-    def __init__(self, ip='127.0.0.1', port=19997):
+    def __init__(self, ip='127.0.0.1', port=19997, timeOutInMs=5000, commThreadCycleInMs=5):
         self.ip = ip
         self.port = port
+        self.timeOutInMs = timeOutInMs
+        self.commThreadCycleInMs = commThreadCycleInMs
         self.clientID = self.connectToServer()
         self.h_ApiDummy = None
         self.loadApiDummy()
@@ -78,7 +86,7 @@ class VrepController:
     # ---------------------------------------------------------------------------- #
     #                                                            Server Connection #
     # ---------------------------------------------------------------------------- #
-    def connectToServer(self, ip=None, port=None):
+    def connectToServer(self, ip=None, port=None, timeOutInMs=None, commThreadCycleInMs=None):
         if ip is None:
             ip = self.ip
         else:
@@ -89,8 +97,18 @@ class VrepController:
         else:
             self.port = port
 
+        if timeOutInMs is None:
+            timeOutInMs = self.timeOutInMs
+        else:
+            self.port = timeOutInMs
+
+        if commThreadCycleInMs is None:
+            commThreadCycleInMs = self.commThreadCycleInMs
+        else:
+            self.port = commThreadCycleInMs
+
         vrep.simxFinish(-1)  # just in case, close all opened connections
-        clientID = vrep.simxStart(ip, port, True, True, 5000, 5)
+        clientID = vrep.simxStart(ip, port, True, True, timeOutInMs, commThreadCycleInMs)
         if clientID != -1:
             print('Connected to remote API server')
         else:
@@ -142,3 +160,13 @@ class VrepController:
                 return h_ApiDummy
         self.h_ApiDummy = loadApiDummy(self.clientID)
         return self.h_ApiDummy
+
+
+# ============================================================================ #
+#                                Data conversion                               #
+# ============================================================================ #
+def camDataToRGB(img, isZeroToOne=False):
+    img = np.uint8(img.astype(np.int8))
+    if isZeroToOne:
+        img = img / 255.0
+    return img

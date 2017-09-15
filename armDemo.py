@@ -55,14 +55,28 @@ class ArmDemo(vrep_ext.VrepController):
     def objCreation(self, position, ori):
         position = vrep_ext.toLuaStr_array(position)
         ori = vrep_ext.toLuaStr_array(ori)
-        self.callAssociatedScriptFunction('box', 'objCreation', vrep.simx_opmode_blocking, position, ori)
+        h_obj = self.callAssociatedScriptFunction('box', 'objCreation', vrep.simx_opmode_blocking, position, ori)
+        return int(h_obj[1])
 
     def createRandomObj(self, n):
         X = np.random.uniform(0, 1, n)
         Y = np.random.uniform(0, 0.5, n)
         ori_Z = np.random.uniform(0, 90, n)
+        h_objs = []
         for x, y, ori_z in zip(X, Y, ori_Z):
-            self.objCreation([x, y, 0.025], [0, 0, ori_z])
+            h_objs.append(self.objCreation([x, y, 0.025], [0, 0, ori_z]))
+        return h_objs
+
+    def removeObj(self, h_objs):
+        for i in h_objs:
+            vrep.simxRemoveObject(self.clientID, i, vrep.simx_opmode_blocking)
+
+    def getObjPosition(self, h_objs):
+        positions = []
+        for i in h_objs:
+            positions.append(vrep.simxGetObjectPosition(self.clientID, i, self.h_orig, vrep.simx_opmode_blocking)[1])
+            
+        return positions
 
     def getImageFromCam(self, showImg=False):
         h_cam = vrep.simxGetObjectHandle(self.clientID, 'boxCam', vrep.simx_opmode_blocking)

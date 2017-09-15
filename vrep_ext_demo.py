@@ -11,7 +11,7 @@ os.startfile(path_vrep)
 # ============================================================================ #
 #                               Start simulation                               #
 # ============================================================================ #
-v = vrep_ext.VrepController()
+v = vrep_ext.VrepController('192.168.1.170')
 v.startSim()
 v.restartSim()
 

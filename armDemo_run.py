@@ -13,7 +13,7 @@ from acerlib import logging_ext
 
 # ================================ parameters ================================ #
 nRun = 2
-nReachPerRun = 4
+nReachPerRun = 20
 nObj = 70
 pathname = 'armDemo_data'
 
@@ -55,6 +55,8 @@ for iRun in range(nRun):
         # generate target location
         pick_x = np.random.uniform(0.2, 0.8, 1)[0]
         pick_y = np.random.uniform(0.07, 0.45, 1)[0]
+        # pick_x = np.random.uniform(-0.1, 1.1, 1)[0]
+        # pick_y = np.random.uniform(-0.1, 1.1, 1)[0]
         targetPosition = [pick_x, pick_y, 0.054]
 
         # move above
